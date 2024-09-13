@@ -99,6 +99,8 @@ def main():
                 transform=transforms.Lambda(train_transform)))
             test_set.append(ImageFolderWithPath(
                 os.path.join(dataset_path, category, 'test')))
+            print(category + 'train size:', len(full_train_set[-1]))
+            print(category + 'test size:', len(test_set[-1]))
         full_train_set = torch.utils.data.ConcatDataset(full_train_set)
         test_set = torch.utils.data.ConcatDataset(test_set)
     else:
