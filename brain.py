@@ -59,4 +59,4 @@ class BrainTest(torch.utils.data.Dataset):
         img = Image.open(img_path).convert('RGB')
         img = self.transform(img)
 
-        return img, self.test_label[idx]
+        return img, self.test_label[idx], img_path
