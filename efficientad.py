@@ -366,8 +366,7 @@ def teacher_normalization(teacher, train_loader):
     for train_image, _ in tqdm(train_loader, desc='Computing mean of features'):
         if on_gpu:
             if type(train_image) is list:
-                print(type(train_image[0]))
-                train_image = [x.cuda() for x in train_image]
+                train_image = train_image[0].cuda()
             else:
                 train_image = train_image.cuda()
         teacher_output = teacher(train_image)
@@ -381,7 +380,7 @@ def teacher_normalization(teacher, train_loader):
         if on_gpu:
             if type(train_image) is list:
 
-                train_image = [x.cuda() for x in train_image]
+                train_image = train_image[0].cuda()
             else:
                 train_image = train_image.cuda()
         teacher_output = teacher(train_image)
