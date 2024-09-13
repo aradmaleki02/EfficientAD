@@ -9,6 +9,7 @@ import argparse
 import itertools
 import os
 import random
+import brain
 from tqdm import tqdm
 from common import get_autoencoder, get_pdn_small, get_pdn_medium, \
     ImageFolderWithoutTarget, ImageFolderWithPath, InfiniteDataloader
@@ -17,7 +18,7 @@ from sklearn.metrics import roc_auc_score
 def get_argparse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--dataset', default='mvtec_ad',
-                        choices=['mvtec_ad', 'mvtec_loco'])
+                        choices=['mvtec_ad', 'mvtec_loco', 'br35h'])
     parser.add_argument('-s', '--subdataset', default='bottle',
                         help='One of 15 sub-datasets of Mvtec AD or 5' +
                              'sub-datasets of Mvtec LOCO')
@@ -72,8 +73,6 @@ def main():
         dataset_path = config.mvtec_ad_path
     elif config.dataset == 'mvtec_loco':
         dataset_path = config.mvtec_loco_path
-    else:
-        raise Exception('Unknown config.dataset')
 
     pretrain_penalty = True
     if config.imagenet_train_path == 'none':
@@ -99,16 +98,20 @@ def main():
                 transform=transforms.Lambda(train_transform)))
             test_set.append(ImageFolderWithPath(
                 os.path.join(dataset_path, category, 'test')))
-            print(category + 'train size:', len(full_train_set[-1]))
-            print(category + 'test size:', len(test_set[-1]))
+
         full_train_set = torch.utils.data.ConcatDataset(full_train_set)
         test_set = torch.utils.data.ConcatDataset(test_set)
     else:
-        full_train_set = ImageFolderWithoutTarget(
-            os.path.join(dataset_path, config.subdataset, 'train'),
-            transform=transforms.Lambda(train_transform))
-        test_set = ImageFolderWithPath(
-            os.path.join(dataset_path, config.subdataset, 'test'))
+        if config.dataset == 'br35h':
+            image_size = 224
+            full_train_set = brain.BrainTrain(transform=transforms.Lambda(train_transform))
+            test_set = brain.BrainTest(transform=transforms.Lambda(train_transform))
+        else:
+            full_train_set = ImageFolderWithoutTarget(
+                os.path.join(dataset_path, config.subdataset, 'train'),
+                transform=transforms.Lambda(train_transform))
+            test_set = ImageFolderWithPath(
+                os.path.join(dataset_path, config.subdataset, 'test'))
     print('Train set size:', len(full_train_set))
     print('Test set size:', len(test_set))
     if config.dataset == 'mvtec_ad':
