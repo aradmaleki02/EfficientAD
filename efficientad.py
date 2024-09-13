@@ -37,6 +37,7 @@ def get_argparse():
                         default='./mvtec_loco_anomaly_detection',
                         help='Downloaded Mvtec LOCO dataset')
     parser.add_argument('-t', '--train_steps', type=int, default=70000)
+    parser.add_argument('--high_var', action='store_true', help='Use high variance mvtec_ad')
     return parser.parse_args()
 
 # constants
@@ -86,12 +87,26 @@ def main():
     os.makedirs(train_output_dir)
     os.makedirs(test_output_dir)
 
+    categories = ['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut', 'leather', 'metal_nut',
+                  'pill', 'screw', 'tile', 'toothbrush', 'transistor', 'wood', 'zipper']
     # load data
-    full_train_set = ImageFolderWithoutTarget(
-        os.path.join(dataset_path, config.subdataset, 'train'),
-        transform=transforms.Lambda(train_transform))
-    test_set = ImageFolderWithPath(
-        os.path.join(dataset_path, config.subdataset, 'test'))
+    if config.high_var:
+        full_train_set = []
+        test_set = []
+        for category in categories:
+            full_train_set.append(ImageFolderWithoutTarget(
+                os.path.join(dataset_path, category, 'train'),
+                transform=transforms.Lambda(train_transform)))
+            test_set.append(ImageFolderWithPath(
+                os.path.join(dataset_path, category, 'test')))
+        full_train_set = torch.utils.data.ConcatDataset(full_train_set)
+        test_set = torch.utils.data.ConcatDataset(test_set)
+    else:
+        full_train_set = ImageFolderWithoutTarget(
+            os.path.join(dataset_path, config.subdataset, 'train'),
+            transform=transforms.Lambda(train_transform))
+        test_set = ImageFolderWithPath(
+            os.path.join(dataset_path, config.subdataset, 'test'))
     if config.dataset == 'mvtec_ad':
         # mvtec dataset paper recommend 10% validation set
         train_size = int(0.9 * len(full_train_set))
