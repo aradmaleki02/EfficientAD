@@ -107,6 +107,8 @@ def main():
             transform=transforms.Lambda(train_transform))
         test_set = ImageFolderWithPath(
             os.path.join(dataset_path, config.subdataset, 'test'))
+    print('Train set size:', len(full_train_set))
+    print('Test set size:', len(test_set))
     if config.dataset == 'mvtec_ad':
         # mvtec dataset paper recommend 10% validation set
         train_size = int(0.9 * len(full_train_set))
