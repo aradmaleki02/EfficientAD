@@ -19,7 +19,7 @@ class BrainTrain(torch.utils.data.Dataset):
         img_path = self.image_paths[idx]
         img = Image.open(img_path).convert('RGB')
         img = self.transform(img)
-        return img, 0
+        return img
 
 
 class BrainTest(torch.utils.data.Dataset):

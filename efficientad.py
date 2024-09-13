@@ -365,10 +365,7 @@ def teacher_normalization(teacher, train_loader):
     mean_outputs = []
     for train_image, _ in tqdm(train_loader, desc='Computing mean of features'):
         if on_gpu:
-            if type(train_image) is list:
-                train_image = train_image[0].cuda()
-            else:
-                train_image = train_image.cuda()
+            train_image = train_image.cuda()
         teacher_output = teacher(train_image)
         mean_output = torch.mean(teacher_output, dim=[0, 2, 3])
         mean_outputs.append(mean_output)
@@ -378,11 +375,7 @@ def teacher_normalization(teacher, train_loader):
     mean_distances = []
     for train_image, _ in tqdm(train_loader, desc='Computing std of features'):
         if on_gpu:
-            if type(train_image) is list:
-
-                train_image = train_image[0].cuda()
-            else:
-                train_image = train_image.cuda()
+            train_image = train_image.cuda()
         teacher_output = teacher(train_image)
         distance = (teacher_output - channel_mean) ** 2
         mean_distance = torch.mean(distance, dim=[0, 2, 3])
