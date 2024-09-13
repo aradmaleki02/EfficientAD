@@ -105,7 +105,7 @@ def main():
         if config.dataset == 'br35h':
             image_size = 224
             full_train_set = brain.BrainTrain(transform=transforms.Lambda(train_transform))
-            test_set = brain.BrainTest()
+            test_set = brain.BrainTest(None)
         else:
             full_train_set = ImageFolderWithoutTarget(
                 os.path.join(dataset_path, config.subdataset, 'train'),
