@@ -310,7 +310,8 @@ def test(test_set, teacher, student, autoencoder, teacher_mean, teacher_std,
             file = os.path.join(test_output_dir, defect_class, img_nm + '.tiff')
             tifffile.imwrite(file, map_combined)
 
-        y_true_image = 0 if defect_class == 'good' else 1
+        # y_true_image = 0 if defect_class == 'good' else 1
+        y_true_image = target
         y_score_image = np.max(map_combined)
         y_true.append(y_true_image)
         y_score.append(y_score_image)
