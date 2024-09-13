@@ -114,7 +114,7 @@ def main():
                 os.path.join(dataset_path, config.subdataset, 'test'))
     print('Train set size:', len(full_train_set))
     print('Test set size:', len(test_set))
-    if config.dataset == 'mvtec_ad':
+    if config.dataset != 'mvtec_loco':
         # mvtec dataset paper recommend 10% validation set
         train_size = int(0.9 * len(full_train_set))
         validation_size = len(full_train_set) - train_size
@@ -128,8 +128,7 @@ def main():
         validation_set = ImageFolderWithoutTarget(
             os.path.join(dataset_path, config.subdataset, 'validation'),
             transform=transforms.Lambda(train_transform))
-    else:
-        raise Exception('Unknown config.dataset')
+
 
 
     train_loader = DataLoader(train_set, batch_size=1, shuffle=True,
